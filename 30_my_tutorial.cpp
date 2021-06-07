@@ -1,5 +1,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include <iostream>
 #include <stdexcept>
@@ -20,11 +21,22 @@ const std::vector<const char*> validationLayers = {
 const std::vector<const char*> deviceExtensions = {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
+
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
 const bool enableValidationLayers = true;
 #endif
+
+struct Vertex {
+	glm::vec2 pos;
+	glm::vec3 color;
+};
+const std::vector<Vertex> vertices = {
+	{{0.0f,-0.5f},{1.0f,0.0f,0.0f}},
+	{{0.5f,0.5f},{0.0f,1.0f,0.0f}},
+	{{-0.5f,0.5f},{0.0f,0.0f,1.0f}}
+};
 
 class MyVulkanApplication {
 public:
@@ -60,6 +72,8 @@ private:
 	std::vector<VkFence> inFlightFences;
 	size_t currentFrame = 0;
 	bool framebufferResized = false;
+	VkBuffer vertexBuffer;
+	VkDeviceMemory vertexBufferMemory;
 
 	struct QueueFamilyIndices {
 		int graphicsFamily = -1;
@@ -73,6 +87,8 @@ private:
 		std::vector<VkSurfaceFormatKHR> formats;
 		std::vector<VkPresentModeKHR> presentModes;
 	};
+	
+
 	void initWindow() {
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -114,6 +130,7 @@ private:
 		createGraphicsPipeline();
 		createFramebuffers();
 		createCommandPool();
+		createVertexBuffer();
 		createCommandBuffers();
 		createSyncObjects();
 	}
@@ -127,6 +144,8 @@ private:
 	}
 	void cleanup() {
 		cleanupSwapChain();
+		vkDestroyBuffer(device, vertexBuffer, nullptr);
+		vkFreeMemory(device, vertexBufferMemory, nullptr);
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
 			vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
@@ -737,7 +756,10 @@ private:
 			renderPassInfo.pClearValues = &clearColor;
 			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-			vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+			VkBuffer vertexBuffers[] = { vertexBuffer };
+			VkDeviceSize offsets[] = {0};
+			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+			vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 			vkCmdEndRenderPass(commandBuffers[i]);
 			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
 				throw std::runtime_error("failed to record command buffer记录指令缓冲失败!");
@@ -848,6 +870,47 @@ private:
 		createCommandBuffers();
 	}
 
+	void createVertexBuffer() {
+		VkBufferCreateInfo bufferInfo = {};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+		bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		//bufferInfo.flags = 0;
+
+		if (vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create vertex buffer创建顶点缓存失败!");
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetBufferMemoryRequirements(device, vertexBuffer, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+		if (vkAllocateMemory(device, &allocInfo, nullptr, &vertexBufferMemory) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate vertex buffer memory分配顶点缓存内存失败!");
+		}
+
+		vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
+
+		void* data;
+		vkMapMemory(device, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+		memcpy(data, vertices.data(), (size_t)bufferInfo.size);
+		vkUnmapMemory(device, vertexBufferMemory);
+	}
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properites) {
+		VkPhysicalDeviceMemoryProperties memProperties;
+		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+			if (typeFilter & (1 << i)&&(memProperties.memoryTypes[i].propertyFlags& properites)) {
+				return i;
+			}
+		}
+		throw std::runtime_error("failed to find suitable memory type无法找到合适的内存类型!");
+	}
 };
 int main() {
 	MyVulkanApplication app;
