@@ -1,6 +1,0 @@
-^C:\USERS\ZONGZ\WORK\CPP\VULKANTUTORIAL-VISUALSTUDIOPROJECTFILES\CODE\BUILD\MSVC\VULKANTUTORIAL\30MYTUTORIAL\30_SHADER.VERT
-IF NOT EXIST C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\x64\Debug\30_my_tutorial\shaders mkdir C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\x64\Debug\30_my_tutorial\shaders
-C:\VulkanSDK\1.2.176.1\Bin\glslc.exe 30_shader.vert -o C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\x64\Debug\30_my_tutorial\shaders\vert.spv
-^C:\USERS\ZONGZ\WORK\CPP\VULKANTUTORIAL-VISUALSTUDIOPROJECTFILES\CODE\BUILD\MSVC\VULKANTUTORIAL\30MYTUTORIAL\30_SHADER.FRAG
-IF NOT EXIST C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\x64\Debug\30_my_tutorial\shaders mkdir C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\x64\Debug\30_my_tutorial\shaders
-C:\VulkanSDK\1.2.176.1\Bin\glslc.exe 30_shader.frag -o C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\x64\Debug\30_my_tutorial\shaders\frag.spv
