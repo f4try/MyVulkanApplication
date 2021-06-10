@@ -1,3 +1,4 @@
 ﻿  30_my_tutorial.cpp
-C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\30mytutorial\30_my_tutorial.cpp(372,1): warning C4267: “=”: 从“size_t”转换到“uint32_t”，可能丢失数据
+C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\30mytutorial\30_my_tutorial.cpp(396,1): warning C4267: “=”: 从“size_t”转换到“uint32_t”，可能丢失数据
+LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
   30mytutorial.vcxproj -> C:\Users\zongz\work\cpp\VulkanTutorial-VisualStudioProjectFiles\code\build\msvc\VulkanTutorial\x64\Debug\30_my_tutorial\30_my_tutorial.exe
