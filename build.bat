@@ -11,8 +11,8 @@ IF NOT EXIST shaders mkdir shaders
 @set OUT_EXE=MyVulkanApplication
 
 @set OUT_DIR=Debug
-mkdir %OUT_DIR%
-cl /std:c++17 /EHsc /nologo /Zi /MD %INCLUDES% %SOURCES% /Fe%OUT_DIR%/%OUT_EXE%.exe /Fo%OUT_DIR%/ /link %LIBS%
+IF NOT EXIST %OUT_DIR% mkdir %OUT_DIR%
+cl /nologo /std:c++17 /EHsc /nologo /Zi /MD %INCLUDES% %SOURCES% /Fe%OUT_DIR%/%OUT_EXE%.exe /Fo%OUT_DIR%/ /link %LIBS%
 %~dp0/Debug/MyVulkanApplication.exe
 
 @REM @set OUT_DIR=Release
