@@ -5,7 +5,7 @@ IF NOT EXIST shaders mkdir shaders
 
 @REM Build for Visual Studio compiler. Run your copy of amd64/vcvars32.bat to setup 64-bit command-line compiler.
 
-@set INCLUDES=/I %VULKAN_SDK%\include
+@set INCLUDES=/I %VULKAN_SDK%\include /I includes
 @set SOURCES=main.cpp
 @set LIBS=/libpath:%VULKAN_SDK%\lib glfw3.lib opengl32.lib gdi32.lib shell32.lib vulkan-1.lib user32.lib
 @set OUT_EXE=MyVulkanApplication
